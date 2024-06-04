@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"geosync/user-service/config"
 	"geosync/user-service/internal/controllers"
 	"geosync/user-service/internal/middlewares"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
