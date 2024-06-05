@@ -3,19 +3,26 @@ package controllers
 import (
 	"geosync/user-service/internal/models"
 	"geosync/user-service/internal/services"
+	"geosync/user-service/internal/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func CreateUser(c *gin.Context) {
 	var user models.User
-
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := services.CreateUser(&user)
+	hashedPassword, err := utils.HashPassword(user.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+	user.Password = hashedPassword
+
+	err = services.CreateUser(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

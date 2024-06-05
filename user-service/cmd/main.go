@@ -2,26 +2,17 @@ package main
 
 import (
 	"geosync/user-service/config"
-	"geosync/user-service/internal/controllers"
-	"geosync/user-service/internal/middlewares"
-	"github.com/gin-gonic/gin"
+	"geosync/user-service/internal/routes"
 )
 
 func main() {
-	router := gin.Default()
-
 	config.ConnectDatabase()
-	router.Use(middlewares.AuthMiddleware())
+	config.RunMigrations()
+	config.SeedDatabase() // Llamar a la función de prellenado de datos
 
-	v1 := router.Group("/api/v1")
-	{
-		users := v1.Group("/users")
-		{
-			users.POST("/", controllers.CreateUser)
-			users.GET("/", controllers.GetUsers)
-			users.GET("/:id", controllers.GetUser)
-		}
-	}
+	// Configurar el enrutador
+	router := routes.SetupRouter()
 
+	// Iniciar el servidor
 	router.Run(":8080")
 }
