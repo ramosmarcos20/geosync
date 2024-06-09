@@ -9,17 +9,18 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
-	// Aplicar middleware de autenticación
-	router.Use(middlewares.AuthMiddleware())
+	// Ruta de inicio de sesión sin prefijo
+	router.POST("/login", controllers.Login)
 
-	// Definir rutas
-	v1 := router.Group("/api/v1")
+	// Rutas protegidas
+	root := router.Group("/")
+	root.Use(middlewares.AuthMiddleware())
 	{
-		users := v1.Group("/users")
+		users := root.Group("/users")
 		{
-			users.POST("/", controllers.CreateUser)
-			users.GET("/", controllers.GetUsers)
-			users.GET("/:id", controllers.GetUser)
+			users.POST("/create", controllers.CreateUser)  // Crear un nuevo usuario
+			users.GET("/list", controllers.GetUsers)       // Obtener lista de usuarios
+			users.GET("/details/:id", controllers.GetUser) // Obtener detalles de un usuario específico
 		}
 	}
 

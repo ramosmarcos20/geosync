@@ -5,5 +5,9 @@ import (
 )
 
 func RunMigrations() {
-	DB.AutoMigrate(&models.User{}, &models.Role{}, &models.Permission{}, &models.RolePermission{})
+	DB.AutoMigrate(
+		&models.Tenant{}, &models.Plan{},
+		&models.User{}, &models.Role{},
+		&models.Permission{}, &models.RolePermission{},
+	)
 }

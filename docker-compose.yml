@@ -13,7 +13,8 @@ services:
       DB_NAME: db_geosync
       DB_PORT: 5432
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - geosync-network
 
@@ -29,6 +30,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - geosync-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4

@@ -20,15 +20,13 @@ func GenerateToken(userID uint) (string, error) {
 	return tokenString, nil
 }
 
-func ValidateToken(tokenString string) bool {
+func ValidateToken(tokenString string) (*jwt.MapClaims, bool) {
 	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		if _, ok := claims["user_id"]; ok {
-			return true
-		}
+		return &claims, true
 	}
-	return false
+	return nil, false
 }
