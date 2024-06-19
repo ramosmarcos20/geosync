@@ -18,7 +18,6 @@ func NewUserService() *UserService {
 }
 
 func (s *UserService) CreateUser(user *models.User) error {
-	// Validar que el email no exista ya en la base de datos
 	existingUserByEmail, err := s.repo.GetUserByEmail(user.Email)
 	if err == nil && existingUserByEmail != nil {
 		log.Printf("Email already in use: %s", user.Email)
