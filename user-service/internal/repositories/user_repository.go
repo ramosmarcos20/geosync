@@ -3,21 +3,83 @@ package repositories
 import (
 	"geosync/user-service/config"
 	"geosync/user-service/internal/models"
+	"log"
 )
 
-func CreateUser(user *models.User) error {
-	return config.DB.Create(user).Error
+type UserRepository struct{}
+
+func NewUserRepository() *UserRepository {
+	return &UserRepository{}
 }
 
-func GetUsers() []models.User {
+func (r *UserRepository) CreateUser(user *models.User) error {
+	err := config.DB.Create(user).Error
+	if err != nil {
+		log.Printf("Error creating user in DB: %v", err)
+	}
+	return err
+}
+
+func (r *UserRepository) GetUsers() []models.User {
 	var users []models.User
-	config.DB.Find(&users)
+	err := config.DB.Find(&users).Error
+	if err != nil {
+		log.Printf("Error getting users from DB: %v", err)
+	}
 	return users
 }
 
-func GetUser(id string) (*models.User, error) {
+func (r *UserRepository) GetUser(id string) (*models.User, error) {
 	var user models.User
-	if err := config.DB.First(&user, id).Error; err != nil {
+	err := config.DB.First(&user, id).Error
+	if err != nil {
+		log.Printf("Error getting user from DB: %v", err)
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	err := config.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		log.Printf("Error getting user by email from DB: %v", err)
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *UserRepository) GetUserByUserName(userName string) (*models.User, error) {
+	var user models.User
+	err := config.DB.Where("user_name = ?", userName).First(&user).Error
+	if err != nil {
+		log.Printf("Error getting user by username from DB: %v", err)
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *UserRepository) UpdateUser(user *models.User) error {
+	err := config.DB.Save(user).Error
+	if err != nil {
+		log.Printf("Error updating user in DB: %v", err)
+	}
+	return err
+}
+
+func (r *UserRepository) DeleteUser(id uint) error {
+	err := config.DB.Unscoped().Delete(&models.User{}, id).Error
+	if err != nil {
+		log.Printf("Error deleting user in DB: %v", err)
+	}
+	return err
+}
+
+func (r *UserRepository) GetUserAuth(id uint) (*models.User, error) {
+	var user models.User
+	err := config.DB.First(&user, id).Error
+	if err != nil {
+		log.Printf("Error getting user by ID from DB: %v", err)
 		return nil, err
 	}
 	return &user, nil

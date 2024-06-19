@@ -18,11 +18,22 @@ func SetupRouter() *gin.Engine {
 	{
 		users := root.Group("/users")
 		{
-			users.POST("/create", controllers.CreateUser)  // Crear un nuevo usuario
-			users.GET("/list", controllers.GetUsers)       // Obtener lista de usuarios
-			users.GET("/details/:id", controllers.GetUser) // Obtener detalles de un usuario específico
+			userController := controllers.NewUserController()
+			users.POST("/create", userController.CreateUser)       // Crear un nuevo usuario
+			users.GET("/list", userController.GetUsers)            // Obtener lista de usuarios
+			users.GET("/details/:id", userController.GetUser)      // Obtener detalles de un usuario específico
+			users.POST("/update/:id", userController.UpdateUser)   // Actualizar un usuario
+			users.DELETE("/delete/:id", userController.DeleteUser) // Eliminar un usuario
+			users.GET("/profile", userController.UserAuth)         // Obtener perfil del usuario autenticado
+		}
+
+		tenants := root.Group("/tenants")
+		{
+			tenantController := controllers.NewTenantController()
+			tenants.GET("/index", tenantController.Index)
 		}
 	}
+
 
 	return router
 }

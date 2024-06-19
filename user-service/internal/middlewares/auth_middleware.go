@@ -17,14 +17,15 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		tokenString := strings.TrimSpace(strings.Replace(authHeader, "Bearer", "", 1))
-		claims, valid := utils.ValidateToken(tokenString)
-		if !valid {
+		claims, err := utils.ValidateToken(tokenString)
+		if err != nil || claims == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
 		}
 
-		c.Set("userID", (*claims)["user_id"])
+		// Store user ID from token claims into context
+		c.Set("userID", claims["user_id"])
 		c.Next()
 	}
 }
