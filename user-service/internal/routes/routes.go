@@ -3,6 +3,8 @@ package routes
 import (
 	"geosync/user-service/internal/controllers"
 	"geosync/user-service/internal/middlewares"
+	"geosync/user-service/internal/repositories"
+	"geosync/user-service/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,13 +14,17 @@ func SetupRouter() *gin.Engine {
 	// Ruta de inicio de sesión sin prefijo
 	router.POST("/login", controllers.Login)
 
+	// Crear instancias del repositorio y servicio
+	userRepo := repositories.NewUserRepository()
+	userService := services.NewUserService(userRepo)
+	userController := controllers.NewUserController(userService)
+
 	// Rutas protegidas
 	root := router.Group("/")
 	root.Use(middlewares.AuthMiddleware())
 	{
 		users := root.Group("/users")
 		{
-			userController := controllers.NewUserController()
 			users.POST("/create", userController.CreateUser)       // Crear un nuevo usuario
 			users.GET("/list", userController.GetUsers)            // Obtener lista de usuarios
 			users.GET("/details/:id", userController.GetUser)      // Obtener detalles de un usuario específico
@@ -26,14 +32,7 @@ func SetupRouter() *gin.Engine {
 			users.DELETE("/delete/:id", userController.DeleteUser) // Eliminar un usuario
 			users.GET("/profile", userController.UserAuth)         // Obtener perfil del usuario autenticado
 		}
-
-		tenants := root.Group("/tenants")
-		{
-			tenantController := controllers.NewTenantController()
-			tenants.GET("/index", tenantController.Index)
-		}
 	}
-
 
 	return router
 }
