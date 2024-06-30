@@ -15,9 +15,9 @@ func SetupRouter() *gin.Engine {
 	router.POST("/login", controllers.Login)
 
 	// Crear instancias del repositorio y servicio
-	userRepo := repositories.NewUserRepository()
-	userService := services.NewUserService(userRepo)
-	userController := controllers.NewUserController(userService)
+	userRepo 		:= repositories.NewUserRepository()
+	userService 	:= services.NewUserService(userRepo)
+	userController	:= controllers.NewUserController(userService)
 
 	// Rutas protegidas
 	root := router.Group("/")

@@ -3,6 +3,7 @@ module geosync/user-service
 go 1.22.3
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/golang-jwt/jwt/v4 v4.0.0
 	github.com/joho/godotenv v1.5.1

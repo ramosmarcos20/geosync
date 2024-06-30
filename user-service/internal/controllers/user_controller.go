@@ -35,6 +35,9 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 	}
 	user.Password = hashedPassword
 
+/* 	utils.DD(c, user)
+	return  */
+
 	errs := uc.service.CreateUser(&user)
 	if len(errs) > 0 {
 		var errorMessages []string
